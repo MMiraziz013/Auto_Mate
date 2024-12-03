@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox, simpledialog
 from modules.countdown import start_countdown, parse_time_input
 from modules.birthday_email import send_email  # Import the function above
+from modules.scheduler import schedule_email
 
 
 def open_email_automation():
@@ -28,17 +29,27 @@ def open_email_automation():
     message_entry = tk.Text(email_window, height=5, width=30)
     message_entry.grid(row=4, column=1, padx=10, pady=5)
 
+    tk.Label(email_window, text="Schedule (HH:MM:SS):").grid(row=5, column=0, padx=10, pady=5)
+    schedule_entry = tk.Entry(email_window, width=40)
+    schedule_entry.grid(row=5, column=1, padx=10, pady=5)
+
     def send_email_button():
         sender_email = sender_email_entry.get()
         sender_password = sender_password_entry.get()
         recipient_email = recipient_email_entry.get()
         subject = subject_entry.get()
-        message = message_entry.get("1.0", tk.END)
-        result = send_email(sender_email, sender_password, recipient_email, subject, message)
+        message = message_entry.get("1.0", tk.END).strip()
+        schedule_time = schedule_entry.get()
+
+        if schedule_time:
+            result = schedule_email(sender_email, sender_password, recipient_email, subject, message, schedule_time)
+        else:
+            result = send_email(sender_email, sender_password, recipient_email, subject, message)
+
         messagebox.showinfo("Result", result)
 
-    send_button = tk.Button(email_window, text="Send Email", command=send_email_button)
-    send_button.grid(row=5, column=0, columnspan=2, pady=10)
+    send_button = tk.Button(email_window, text="Send/Schedule Email", command=send_email_button)
+    send_button.grid(row=6, column=0, columnspan=2, pady=10)
 
 # Add this function to your main menu:
 # tk.Button(root, text="Automated Birthday Email", command=open_email_automation).pack(pady=5)
@@ -78,6 +89,3 @@ def main_menu():
 
     tk.Button(root, text="Exit", command=root.quit).pack(pady=20)
     root.mainloop()
-
-if __name__ == "__main__":
-    main_menu()
