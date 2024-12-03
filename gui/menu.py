@@ -2,8 +2,9 @@ import tkinter as tk
 from tkinter import messagebox, simpledialog
 from modules.countdown import start_countdown, parse_time_input
 from modules.birthday_email import send_email  # Import the function above
-from modules.scheduler import schedule_email
-
+from tkcalendar import Calendar
+from datetime import datetime
+import threading
 
 def open_email_automation():
     email_window = tk.Toplevel()
@@ -29,30 +30,51 @@ def open_email_automation():
     message_entry = tk.Text(email_window, height=5, width=30)
     message_entry.grid(row=4, column=1, padx=10, pady=5)
 
-    tk.Label(email_window, text="Schedule (HH:MM:SS):").grid(row=5, column=0, padx=10, pady=5)
-    schedule_entry = tk.Entry(email_window, width=40)
-    schedule_entry.grid(row=5, column=1, padx=10, pady=5)
+    # Add a calendar widget for date selection
+    tk.Label(email_window, text="Select Date:").grid(row=5, column=0, padx=10, pady=5)
+    calendar = Calendar(email_window, selectmode='day', date_pattern='yyyy-mm-dd')
+    calendar.grid(row=5, column=1, padx=10, pady=5)
+
+    # Add a time input field for hh:mm:ss
+    tk.Label(email_window, text="Enter Time (hh:mm:ss):").grid(row=6, column=0, padx=10, pady=5)
+    time_entry = tk.Entry(email_window, width=20)
+    time_entry.grid(row=6, column=1, padx=10, pady=5)
 
     def send_email_button():
         sender_email = sender_email_entry.get()
         sender_password = sender_password_entry.get()
         recipient_email = recipient_email_entry.get()
         subject = subject_entry.get()
-        message = message_entry.get("1.0", tk.END).strip()
-        schedule_time = schedule_entry.get()
+        message = message_entry.get("1.0", tk.END)
 
-        if schedule_time:
-            result = schedule_email(sender_email, sender_password, recipient_email, subject, message, schedule_time)
-        else:
-            result = send_email(sender_email, sender_password, recipient_email, subject, message)
+        # Get the selected date and time
+        selected_date = calendar.get_date()  # yyyy-mm-dd format
+        selected_time = time_entry.get().strip()  # Remove whitespace
 
-        messagebox.showinfo("Result", result)
+        try:
+            # Default time to midnight if not specified
+            if not selected_time:
+                selected_time = "00:00:00"
 
-    send_button = tk.Button(email_window, text="Send/Schedule Email", command=send_email_button)
-    send_button.grid(row=6, column=0, columnspan=2, pady=10)
+            # Combine selected date and time
+            schedule_datetime = datetime.strptime(f"{selected_date} {selected_time}", "%Y-%m-%d %H:%M:%S")
+            current_datetime = datetime.now()
 
-# Add this function to your main menu:
-# tk.Button(root, text="Automated Birthday Email", command=open_email_automation).pack(pady=5)
+            # Calculate delay in seconds
+            delay_seconds = (schedule_datetime - current_datetime).total_seconds()
+
+            if delay_seconds > 0:
+                # Schedule email using threading.Timer
+                threading.Timer(delay_seconds, send_email, args=(sender_email, sender_password, recipient_email, subject, message)).start()
+                messagebox.showinfo("Scheduled", f"Email scheduled for {schedule_datetime}")
+            else:
+                messagebox.showerror("Error", "Selected time is in the past!")
+
+        except ValueError:
+            messagebox.showerror("Error", "Invalid time format. Use hh:mm:ss.")
+
+    send_button = tk.Button(email_window, text="Schedule Email", command=send_email_button)
+    send_button.grid(row=7, column=0, columnspan=2, pady=10)
 
 def open_countdown():
     try:
