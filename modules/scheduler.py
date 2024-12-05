@@ -8,7 +8,7 @@ def schedule_email(sender_email, sender_password, recipient_email, subject, mess
         send_email(sender_email, sender_password, recipient_email, subject, message)
 
     try:
-        # Schedule the email
+
         schedule.every().day.at(schedule_time).do(job)
 
         # Run the scheduler in a separate thread

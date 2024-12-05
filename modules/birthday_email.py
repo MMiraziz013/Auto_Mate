@@ -6,7 +6,7 @@ def send_email(sender_email, sender_password, recipient_email, subject, message)
     try:
         smtp = smtplib.SMTP('smtp.gmail.com', 587)
         smtp.starttls()
-        smtp.login(sender_email, sender_password)  # App Password here
+        smtp.login(sender_email, sender_password)
 
         msg = MIMEMultipart()
         msg['From'] = sender_email
