@@ -1,0 +1,64 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Cache files
+*.cache
+*.log
+
+# Virtual environment
+env/
+venv/
+ENV/
+.VENV/
+
+# IDE settings
+.idea/
+.vscode/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Credentials or sensitive information
+*.env
+config.json
+
+# Python test files and reports
+*.coverage
+*.pytest_cache/
+htmlcov/
+
+# Temporary or backup files
+*.bak
+*.tmp
+*.swp
+*.swo
+*~
+
+# Logs and other output files
+logs/
+*.log
+debug.log
+
+# Compiled files (e.g., C extensions)
+*.so
+
+# Ignore tkinter window screenshots (if taken during debugging)
+*.png
+*.jpg
+
+# Custom-sensitive files (if any, like email config)
+credentials.txt
+
+# Build artifacts
+build/
+dist/
+*.spec
+
+# Miscellaneous
+*.zip
+*.tar
+*.gz

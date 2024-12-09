@@ -1,0 +1,10 @@
+mysql
+mysql-connector-python
+pyautogui
+opencv-python
+pytube
+yt-dlp
+ttkthemes
+pyinstaller
+tkcalendar
+numpy

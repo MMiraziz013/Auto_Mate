@@ -1,6 +1,6 @@
-import time
+import threading
+from tkinter import messagebox
 
-import time
 
 def parse_time_input(time_input):
 
@@ -14,14 +14,23 @@ def parse_time_input(time_input):
     except ValueError as e:
         raise ValueError(str(e))
 
-def start_countdown(seconds):
+def run_countdown_with_progress_bar(seconds, root, progress_bar):
+    if seconds <= 0:
+        root.destroy()
+        messagebox.showinfo("Time's Up", "Hey, your time is up!")
+        return
 
-    print(f"Countdown started for {seconds} seconds...")
-    while seconds > 0:
-        hours, remainder = divmod(seconds, 3600)
-        minutes, seconds_left = divmod(remainder, 60)
-        time_display = f"{hours:02d}:{minutes:02d}:{seconds_left:02d}"
-        print(time_display, end="\r")
-        time.sleep(1)
-        seconds -= 1
-    print("\nCountdown finished!")
+    progress_bar['value'] += 1
+    progress_bar.update()
+
+    hours, remainder = divmod(seconds, 3600)
+    minutes, seconds_left = divmod(remainder, 60)
+    time_display = f"{hours:02d}:{minutes:02d}:{seconds_left:02d}"
+    print(time_display, end="\r")
+
+    root.after(1000, run_countdown_with_progress_bar, seconds - 1, root, progress_bar)
+
+def start_countdown(seconds):
+    # Create and start a new thread for the countdown
+    countdown_thread = threading.Thread(target=run_countdown_with_progress_bar, args=(seconds,))
+    countdown_thread.start()
